@@ -22,29 +22,29 @@ class TigrParser(AbstractParser):
     def parse(self, raw_source):
         if type(raw_source) == str:  # defensively handles edge case where a single command was passed as a string
             raw_source = [raw_source]
-        self.source = raw_source
-        for line_number in range(0, len(self.source) - 1):
-            trimmed_line = self.source[line_number].strip()
+        source = raw_source
+        for line_number in range(0, len(source) - 1):
+            trimmed_line = source[line_number].strip()
             if not trimmed_line:
                 continue
             match = re.findall(self.regex_pattern, trimmed_line)
             if match:
                 groups = match[0]
-                self.command = groups[0].upper()
+                command = groups[0].upper()
                 if groups[1]:
-                    self.data = int(round(float(groups[1])))
+                    command_data = int(round(float(groups[1])))
                     """ Parser accepts decimals but silently rounds them in the background - all numbers passed are
                     stored as integers"""
                 else:
-                    self.data = None
+                    command_data = None
 
-                command_info = self.language_commands.get(self.command)
+                command_info = self.language_commands.get(command)
                 if command_info:
                     args = []
                     if len(command_info) > 1:
                         args.append(*command_info[1])
-                    if self.data:
-                        args.append(self.data)
+                    if command_data:
+                        args.append(command_data)
 
                     # explodes the created args array into the function that is being called
                     # if there is nothing in the array, nothing will be passed! Nice and fancy.
@@ -52,7 +52,7 @@ class TigrParser(AbstractParser):
                         self.drawer.__getattribute__(command_info[0])(*args)
                     except AttributeError as e:
                         raise SyntaxError(
-                            f'Command {self.command} Not recognized by drawer - Command reference mismatch detected')
+                            f'Command {command} Not recognized by drawer - Command reference mismatch detected')
                     except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
                         # that caused it
                         args = e.args
@@ -65,7 +65,7 @@ class TigrParser(AbstractParser):
                         raise
 
                 else:
-                    raise SyntaxError(f"Command {self.command} on line {line_number} not recognized")
+                    raise SyntaxError(f"Command {command} on line {line_number} not recognized")
             else:
                 # Raises SyntaxError to indicate that the line line_number didn't match the required pattern
                 raise SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
