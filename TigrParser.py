@@ -38,6 +38,29 @@ class TigrParser(AbstractParser):
             # Raises SyntaxError to indicate that the line line_number didn't match the required pattern
             raise SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
 
+    def _build_command(self, command_groups, line_number):
+        """Takes the return from the _trim_and_validate() method and builds the appropriate command string to execute"""
+        command_string = command_groups[0].upper()
+        command_info = self.language_commands.get(command_string)
+        if command_info:
+            if command_groups[1]:
+                command_data = int(round(float(command_groups[1])))
+            else:
+                command_data = None
+
+            args = []
+            if len(command_info) > 1:
+                args.append(*command_info[1])
+            if command_data:
+                args.append(command_data)
+            return command_info[0], args
+        else:
+            raise SyntaxError(f"Command {command_string} on line {line_number} not recognized")
+
+
+
+
+
     def parse(self, raw_source):
         """Method to accept raw source code, parse to language commands, and then execute language commands"""
         source = self._prepare_source(raw_source)
