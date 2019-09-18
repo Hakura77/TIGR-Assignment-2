@@ -30,7 +30,7 @@ class TigrParser(AbstractParser):
         source = self._prepare_source(raw_source)
         for line_number in range(0, len(source) - 1):
             trimmed_line = source[line_number].strip()
-            if not trimmed_line:
+            if not trimmed_line:  # this occurs when a blank line is passed in the source code
                 continue
             match = re.findall(self.regex_pattern, trimmed_line)
             if match:
