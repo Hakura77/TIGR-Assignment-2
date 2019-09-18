@@ -57,6 +57,25 @@ class TigrParser(AbstractParser):
         else:
             raise SyntaxError(f"Command {command_string} on line {line_number} not recognized")
 
+    def _execute_command(self, command, arguments, line_number):
+        """Accesses the determined command on the provided drawer
+        throws errors if the command doesn't exist or crashes mid-execution"""
+        try:
+            self.drawer.__getattribute__(command)(*arguments)
+        except AttributeError as e:
+            raise SyntaxError(
+                f'Command {command} Not recognized by drawer - Command reference mismatch detected')
+        except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
+            # that caused it
+            args = e.args
+            if args:
+                arg0 = args[0]
+            else:
+                arg0 = str()
+            arg0 += f' at source line {line_number}'
+            e.args = (arg0, *args[1:])
+            raise
+
     def parse(self, raw_source):
         """Method to accept raw source code, parse to language commands, and then execute language commands"""
         source = self._prepare_source(raw_source)
