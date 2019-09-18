@@ -26,9 +26,8 @@ class TigrParser(AbstractParser):
         return raw_source
 
     def parse(self, raw_source):
-        if type(raw_source) == str:  # defensively handles edge case where a single command was passed as a string
-            raw_source = [raw_source]
-        source = raw_source
+        """Method to accept raw source code, parse to language commands, and then execute language commands"""
+        source = self._prepare_source(raw_source)
         for line_number in range(0, len(source) - 1):
             trimmed_line = source[line_number].strip()
             if not trimmed_line:
