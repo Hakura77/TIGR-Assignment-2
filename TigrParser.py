@@ -42,10 +42,7 @@ class TigrParser(AbstractParser):
         """Method to accept raw source code, parse to language commands, and then execute language commands"""
         source = self._prepare_source(raw_source)
         for line_number in range(0, len(source) - 1):
-            trimmed_line = source[line_number].strip()
-            if not trimmed_line:  # this occurs when a blank line is passed in the source code
-                continue
-            match = re.findall(self.regex_pattern, trimmed_line)
+            match = self._trim_and_validate_line(source[line_number], line_number)
             if match:
                 groups = match[0]
                 command = groups[0].upper()
@@ -81,9 +78,5 @@ class TigrParser(AbstractParser):
                         arg0 += f' at source line {line_number}'
                         e.args = (arg0, *args[1:])
                         raise
-
                 else:
                     raise SyntaxError(f"Command {command} on line {line_number} not recognized")
-            else:
-                # Raises SyntaxError to indicate that the line line_number didn't match the required pattern
-                raise SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
