@@ -25,6 +25,19 @@ class TigrParser(AbstractParser):
             raw_source = [raw_source]
         return raw_source
 
+    def _trim_and_validate_line(self, line, line_number):
+        """accepts a line of code and a line index. validates that the line matches the provided pattern
+          returns the valid line. in the instance where the line is empty, None is returned instead"""
+        trimmed_line = line.strip()
+        if not trimmed_line:
+            return None
+        match = re.findall(self.regex_pattern, trimmed_line)
+        if match:
+            return match
+        else:
+            # Raises SyntaxError to indicate that the line line_number didn't match the required pattern
+            raise SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
+
     def parse(self, raw_source):
         """Method to accept raw source code, parse to language commands, and then execute language commands"""
         source = self._prepare_source(raw_source)
