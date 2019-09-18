@@ -61,6 +61,8 @@ class TigrParser(AbstractParser):
         """Accesses the determined command on the provided drawer
         throws errors if the command doesn't exist or crashes mid-execution"""
         try:
+            # explodes the created args array into the function that is being called
+            # if there is nothing in the array, nothing will be passed! Nice and fancy.
             self.drawer.__getattribute__(command)(*arguments)
         except AttributeError as e:
             raise SyntaxError(
@@ -83,20 +85,4 @@ class TigrParser(AbstractParser):
             match = self._trim_and_validate_line(source[line_number], line_number)
             if match:
                 command, arguments = self._build_command(match[0], line_number)
-                # explodes the created args array into the function that is being called
-                # if there is nothing in the array, nothing will be passed! Nice and fancy.
-                try:
-                    self.drawer.__getattribute__(command)(*arguments)
-                except AttributeError as e:
-                    raise SyntaxError(
-                        f'Command {command} Not recognized by drawer - Command reference mismatch detected')
-                except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
-                    # that caused it
-                    args = e.args
-                    if args:
-                        arg0 = args[0]
-                    else:
-                        arg0 = str()
-                    arg0 += f' at source line {line_number}'
-                    e.args = (arg0, *args[1:])
-                    raise
+                self._execute_command(command, arguments, line_number)
