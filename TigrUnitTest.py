@@ -108,11 +108,6 @@ class ParserTestCase(unittest.TestCase):
             raised = True
         self.assertFalse(raised, "Error Raised")
 
-    def test_source_valid(self):
-        """Test to confirm source stored in parser is valid"""
-        self.parser.parse(self.source)
-        self.assertEqual(self.parser.source, self.source)
-
 
 class SourceReaderTestCase(unittest.TestCase):
 
