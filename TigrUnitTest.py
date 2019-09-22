@@ -44,6 +44,15 @@ class DrawerTestCase(unittest.TestCase):
             raised = True
         self.assertFalse(raised, "Error Raised")
 
+    def test_select_pen_executes_range(self):
+        """Test to confirm that the drawer's method select_pen runs without error"""
+        raised = False
+        try:
+            self.drawer.select_pen(-10)
+        except:
+            raised = True
+        self.assertTrue(raised, "Error Raised")
+
     def test_pen_down_executes(self):
         """Test to confirm that the drawer's method pen_down runs without error"""
         raised = False
@@ -54,13 +63,23 @@ class DrawerTestCase(unittest.TestCase):
         self.assertFalse(raised, "Error Raised")
 
     def test_pen_up_executes(self):
-        """Test to confirm that the drawer's method pen_up runs without error"""
+        """Test to confirm that the drawer's method pen_down runs without error"""
         raised = False
         try:
             self.drawer.pen_up()
         except:
             raised = True
         self.assertFalse(raised, "Error Raised")
+
+    def test_draw_line_executes_range(self):
+        """Test to confirm that Method does not take value over its limits"""
+        raised = False
+        try:
+            self.drawer.draw_line(400, 10)
+        except:
+            raised = True
+        self.assertTrue(raised, "Error Raised")
+
 
     def test_go_along_executes(self):
         """Test to confirm that the drawer's method go_along runs without error"""
@@ -89,11 +108,21 @@ class DrawerTestCase(unittest.TestCase):
             raised = True
         self.assertFalse(raised, "Error Raised")
 
+    def test_draw_line_executes_range(self):
+        """Test to confirm that Method does not take value over its limits"""
+        raised = False
+        try:
+            self.drawer.draw_line(400, 10)
+        except:
+            raised = True
+        self.assertTrue(raised, "Error Raised")
+
 
 class ParserTestCase(unittest.TestCase):
     def setUp(self):
         self.parser = TigrParser(TurtleDrawer())
-        self.source = ["p 3"]
+        self.source = ["p 3", "E 200"]
+        self.raw_source = "N 200"
 
     def test_parse_exists(self):
         """Test to confirm that the parser has a method called parse"""
@@ -108,11 +137,26 @@ class ParserTestCase(unittest.TestCase):
             raised = True
         self.assertFalse(raised, "Error Raised")
 
+    def test_parse_executes_raw_source(self):
+        """Test to confirm that the parser's can take raw string value"""
+        raised = False
+        try:
+            self.parser.parse(self.raw_source)
+        except:
+            raised = True
+        self.assertFalse(raised, "Error Raised")
+
+    def test_parse_executes_no_file_found(self):
+        """Test to confirm that the parser's can throw exc. no file found"""
+        pass
+
+
 
 class SourceReaderTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.source_reader = TigrReader(TigrParser(TurtleDrawer()))
+        self.source_reader = TigrReader(TigrParser(TurtleDrawer()), None, "N30")
+        self.no_source_reader = TigrReader(TigrParser(TurtleDrawer()), None, None)
 
     def test_go_exists(self):
         """Test to confirm that the Source Reader has a method called go"""
@@ -121,13 +165,42 @@ class SourceReaderTestCase(unittest.TestCase):
     def test_go_executes(self):
         """Test to confirm that the source reader's method go runs without error"""
         raised = False
-        self.source_reader.source = ["p 3"]
+        self.source_reader.source = ["p 3", "N 30"]
+
         try:
             self.source_reader.go()
         except:
             raised = True
         self.assertFalse(raised, "Error Raised")
 
+    def test_go_executes_parameters_source(self):
+        """Test to confirm that the source reader's method go runs without error"""
+        raised = False
+        try:
+            self.source_reader.go()
+        except:
+            raised = True
+        self.assertFalse(raised, "Error Raised")
+
+    def test_go_executes_no_source(self):
+        """Test to confirm that the source reader's method go runs without source"""
+        self.no_source_reader.file_name = 'commands.txt'
+        raised = False
+        try:
+            self.no_source_reader.go()
+        except:
+            raised = True
+        self.assertFalse(raised, "Error Raised")
+
+    def test_go_executes_invalid_file_name(self):
+        """Test to confirm that the source reader's method go runs without source"""
+        self.no_source_reader.file_name = 'File.txt'
+        raised = False
+        try:
+            self.no_source_reader.go()
+        except:
+            raised = True
+        self.assertTrue(raised, "Error Raised")
 
 def drawer_suite():
     suite = unittest.TestSuite()
