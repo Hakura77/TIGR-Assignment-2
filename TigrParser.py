@@ -56,25 +56,28 @@ class TigrParser(AbstractParser):
         else:
             raise SyntaxError(f"Command {self.command} on line {line_number} not recognized")
 
+    def _execute(self, command_group, line_number):
+        try:
+            self.drawer.__getattribute__(command_group[0][0])(*command_group[1])
+        except AttributeError as e:
+            raise SyntaxError(
+                f'Command {self.command} Not recognized by drawer - Command reference mismatch detected')
+        except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
+            # that caused it
+            args = e.args
+            if args:
+                arg0 = args[0]
+            else:
+                arg0 = str()
+            arg0 += f' at source line {line_number}'
+            e.args = (arg0, *args[1:])
+
     def parse(self, raw_source):
         self.source = self._handle_source(raw_source)
         for line_number in range(0, len(self.source) - 1):
             match = self._find_match(line_number)
             if match:
                 command_group = self._make_command(match, line_number)
-                try:
-                    self.drawer.__getattribute__(command_group[0][0])(*command_group[1])
-                except AttributeError as e:
-                    raise SyntaxError(
-                        f'Command {self.command} Not recognized by drawer - Command reference mismatch detected')
-                except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
-                    # that caused it
-                    args = e.args
-                    if args:
-                        arg0 = args[0]
-                    else:
-                        arg0 = str()
-                    arg0 += f' at source line {line_number}'
-                    e.args = (arg0, *args[1:])
+                self._execute(command_group, line_number)
 
 
