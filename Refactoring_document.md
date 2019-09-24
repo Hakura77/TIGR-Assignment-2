@@ -7,7 +7,7 @@
          1. the method parse has 51 lines, which can not fit in one screen.
          2. the method code will be hard to understand and maintained by other developer.
          3. against the single responsible principle. 
- - Strategy: break the method into small methods
+ - Strategy: break the long method into small methods
 
 2. Bad smells: 
      - Category:   
