@@ -19,10 +19,13 @@ class TigrParser(AbstractParser):
         except (IOError, FileNotFoundError) as e:  # This error is thrown to be caught further up the stack
             raise FileNotFoundError(f"Error loading commands from file: {e}")
 
-    def parse(self, raw_source):
-        if type(raw_source) == str:  # defensively handles edge case where a single command was passed as a string
+    def _handle_source(self, raw_source):
+        if type(raw_source) == str:
             raw_source = [raw_source]
-        self.source = raw_source
+        return raw_source
+
+    def parse(self, raw_source):
+        self.source = self._handle_source(raw_source)
         for line_number in range(0, len(self.source) - 1):
             trimmed_line = self.source[line_number].strip()
             if not trimmed_line:
