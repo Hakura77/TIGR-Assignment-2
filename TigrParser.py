@@ -24,13 +24,25 @@ class TigrParser(AbstractParser):
             raw_source = [raw_source]
         return raw_source
 
+    def _find_match(self, line_number):
+        trimmed_line = self.source[line_number].strip()
+        if not trimmed_line:
+            return None
+        match = re.findall(self.regex_pattern, trimmed_line)
+        if match:
+            return match
+        else:
+            # Raises SyntaxError to indicate that the line line_number didn't match the required pattern
+            raise SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
+
     def parse(self, raw_source):
         self.source = self._handle_source(raw_source)
         for line_number in range(0, len(self.source) - 1):
-            trimmed_line = self.source[line_number].strip()
-            if not trimmed_line:
-                continue
-            match = re.findall(self.regex_pattern, trimmed_line)
+            # trimmed_line = self.source[line_number].strip()
+            # if not trimmed_line:
+            #     continue
+            # match = re.findall(self.regex_pattern, trimmed_line)
+            match = self._find_match(line_number)
             if match:
                 groups = match[0]
                 self.command = groups[0].upper()
@@ -69,6 +81,6 @@ class TigrParser(AbstractParser):
 
                 else:
                     raise SyntaxError(f"Command {self.command} on line {line_number} not recognized")
-            else:
-                # Raises SyntaxError to indicate that the line line_number didn't match the required pattern
-                raise SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
+            # else:
+            #     # Raises SyntaxError to indicate that the line line_number didn't match the required pattern
+            #     raise SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
