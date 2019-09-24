@@ -17,6 +17,14 @@ def _handle_source(raw_source):
 class TigrParser(AbstractParser):
     def __init__(self, drawer):
         super().__init__(drawer)
+        self.draw_methods = {
+            'select_pen': self.drawer.select_pen,
+            'pen_down': self.drawer.pen_down,
+            'pen_up': self.drawer.pen_up,
+            'go_along': self.drawer.go_along,
+            'go_down': self.drawer.go_down,
+            'draw_line': self.drawer.draw_line,
+            }
         self.regex_pattern = r'(^[a-zA-Z]\b)\s+?(-?\b\d+\.?\d?\b)?\s*?([#|//].*)?$'
         try:
             with open("command_lookup.json", 'r') as json_file:
@@ -59,7 +67,7 @@ class TigrParser(AbstractParser):
 
     def _execute(self, command_group, line_number):
         try:
-            self.drawer.__getattribute__(command_group[0][0])(*command_group[1])
+            self.draw_methods[command_group[0][0]](*command_group[1])
         except AttributeError:
             raise SyntaxError(
                 f'Command {self.command} Not recognized by drawer - Command reference mismatch detected')

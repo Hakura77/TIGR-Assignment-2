@@ -1,5 +1,4 @@
-#Refactoring Document
-##Bad Smells Detected
+#Bad Smells Detected
 1. Bad smells: Long Method
      - Category:  Bloater 
      - Location: TigrParser.py line 22-71
