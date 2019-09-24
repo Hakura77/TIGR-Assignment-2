@@ -8,6 +8,12 @@ Written by Kelsey Vavasour and Thomas Baines
 """
 
 
+def _handle_source(raw_source):
+    if type(raw_source) == str:
+        raw_source = [raw_source]
+    return raw_source
+
+
 class TigrParser(AbstractParser):
     def __init__(self, drawer):
         super().__init__(drawer)
@@ -18,11 +24,6 @@ class TigrParser(AbstractParser):
                 self.language_commands = json.load(json_file)  # convert to dict
         except (IOError, FileNotFoundError) as e:  # This error is thrown to be caught further up the stack
             raise FileNotFoundError(f"Error loading commands from file: {e}")
-
-    def _handle_source(self, raw_source):
-        if type(raw_source) == str:
-            raw_source = [raw_source]
-        return raw_source
 
     def _find_match(self, line_number):
         trimmed_line = self.source[line_number].strip()
@@ -59,7 +60,7 @@ class TigrParser(AbstractParser):
     def _execute(self, command_group, line_number):
         try:
             self.drawer.__getattribute__(command_group[0][0])(*command_group[1])
-        except AttributeError as e:
+        except AttributeError:
             raise SyntaxError(
                 f'Command {self.command} Not recognized by drawer - Command reference mismatch detected')
         except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
@@ -73,11 +74,9 @@ class TigrParser(AbstractParser):
             e.args = (arg0, *args[1:])
 
     def parse(self, raw_source):
-        self.source = self._handle_source(raw_source)
+        self.source = _handle_source(raw_source)
         for line_number in range(0, len(self.source) - 1):
             match = self._find_match(line_number)
             if match:
                 command_group = self._make_command(match, line_number)
                 self._execute(command_group, line_number)
-
-
