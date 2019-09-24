@@ -14,11 +14,13 @@
      - Reasons: break encapsulation of drawer
      - Strategy: make a method in class TigrParser to use
      
-3. Bad smells: 
-     - Category:   
-     - Location: 
-     - Reasons:
-     - Strategy:
+3. Bad smells: Duplicate Code
+     - Category: 
+     - Location: all the error handling in TigrParser.py and TigrReader.py
+     - Reasons: 
+                1.The error handling is all over the place
+                2.It's difficult to read and maintain the code
+     - Strategy: extract all the Error handling into a class ErrorHandle
 
 
  
