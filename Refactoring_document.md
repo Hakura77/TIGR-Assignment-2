@@ -7,13 +7,13 @@
          1. the method parse has 51 lines, which can not fit in one screen.
          2. the method code will be hard to understand and maintained by other developer.
          3. against the single responsible principle. 
- - Strategy: break the long method into small methods
+ - Strategy: extract the long method into small methods
 
-2. Bad smells: 
-     - Category:   
-     - Location: 
-     - Reasons:
-     - Strategy:
+2. Bad smells: Feature Envy
+     - Category: Couplers 
+     - Location: TigrParser.py line 62 self.drawer.__getattribute__
+     - Reasons: break encapsulation of drawer
+     - Strategy: make a method in class TigrParser to use
      
 3. Bad smells: 
      - Category:   
@@ -21,5 +21,5 @@
      - Reasons:
      - Strategy:
 
-##Refactoring Steps
+
  
