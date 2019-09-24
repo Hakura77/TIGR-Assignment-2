@@ -35,46 +35,46 @@ class TigrParser(AbstractParser):
             # Raises SyntaxError to indicate that the line line_number didn't match the required pattern
             raise SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
 
+    def _make_command(self, match_line, line_number):
+        groups = match_line[0]
+        command_groups = []
+        self.command = groups[0].upper()
+        if groups[1]:
+            self.data = int(round(float(groups[1])))
+        else:
+            self.data = None
+        command_info = self.language_commands.get(self.command)
+        command_groups.append(command_info)
+        if command_info:
+            args = []
+            if len(command_info) > 1:
+                args.append(*command_info[1])
+            if self.data:
+                args.append(self.data)
+            command_groups.append(args)
+            return command_groups
+        else:
+            raise SyntaxError(f"Command {self.command} on line {line_number} not recognized")
+
     def parse(self, raw_source):
         self.source = self._handle_source(raw_source)
         for line_number in range(0, len(self.source) - 1):
             match = self._find_match(line_number)
             if match:
-                groups = match[0]
-                self.command = groups[0].upper()
-                if groups[1]:
-                    self.data = int(round(float(groups[1])))
-                    """ Parser accepts decimals but silently rounds them in the background - all numbers passed are
-                    stored as integers"""
-                else:
-                    self.data = None
+                command_group = self._make_command(match, line_number)
+                try:
+                    self.drawer.__getattribute__(command_group[0][0])(*command_group[1])
+                except AttributeError as e:
+                    raise SyntaxError(
+                        f'Command {self.command} Not recognized by drawer - Command reference mismatch detected')
+                except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
+                    # that caused it
+                    args = e.args
+                    if args:
+                        arg0 = args[0]
+                    else:
+                        arg0 = str()
+                    arg0 += f' at source line {line_number}'
+                    e.args = (arg0, *args[1:])
 
-                command_info = self.language_commands.get(self.command)
-                if command_info:
-                    args = []
-                    if len(command_info) > 1:
-                        args.append(*command_info[1])
-                    if self.data:
-                        args.append(self.data)
-
-                    # explodes the created args array into the function that is being called
-                    # if there is nothing in the array, nothing will be passed! Nice and fancy.
-                    try:
-                        self.drawer.__getattribute__(command_info[0])(*args)
-                    except AttributeError as e:
-                        raise SyntaxError(
-                            f'Command {self.command} Not recognized by drawer - Command reference mismatch detected')
-                    except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
-                        # that caused it
-                        args = e.args
-                        if args:
-                            arg0 = args[0]
-                        else:
-                            arg0 = str()
-                        arg0 += f' at source line {line_number}'
-                        e.args = (arg0, *args[1:])
-                        raise
-
-                else:
-                    raise SyntaxError(f"Command {self.command} on line {line_number} not recognized")
 
