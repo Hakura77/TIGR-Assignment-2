@@ -12,10 +12,11 @@
      - Category: Couplers 
      - Location: TigrParser.py line 62 self.drawer.__getattribute__
      - Reasons: break encapsulation of drawer
-     - Strategy: make a method in class TigrParser to use
+     - Strategy: make a method in class TigrParser to use instead of using the using Drawers
+     private method
      
 3. Bad smells: Duplicate Code
-     - Category: 
+     - Category: Dispensables
      - Location: all the error handling in TigrParser.py and TigrReader.py
      - Reasons: 
                 1.The error handling is all over the place

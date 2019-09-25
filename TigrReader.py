@@ -2,7 +2,7 @@ from TIGr import AbstractSourceReader
 from TurtleDrawer import TurtleDrawer
 from TigrParser import TigrParser
 import sys
-from TigrExcptionHandle import ExceptionHandler
+from TigrExcptionHandler import ExceptionHandler
 
 
 class TigrReader(AbstractSourceReader):

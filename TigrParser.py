@@ -1,7 +1,7 @@
 from TIGr import AbstractParser
 import re
 import json
-from TigrExcptionHandle import ExceptionHandler
+
 """
 Uses Regular Expressions in Parser, Parsed from Configurable Lookup Table
 Written by Kelsey Vavasour and Thomas Baines
