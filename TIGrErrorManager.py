@@ -28,6 +28,10 @@ class TIGrErrorManager:
         e.args = (arg0, *args[1:])
         return e
 
+    def standardize_unable_to_open_file(self, error):
+        """This error is thrown when the program is unable to open the provided source file"""
+        return FileNotFoundError(f"Error loading source code from file {error}")
+
     def drawer_language_missmatch_error(self, command_text):
         """This error is thrown when the language database contains a command not supported by drawer"""
         return SyntaxError(
