@@ -121,8 +121,8 @@ class DrawerTestCase(unittest.TestCase):
 class ParserTestCase(unittest.TestCase):
     def setUp(self):
         self.parser = TigrParser(TurtleDrawer())
-        self.source = ["p 3", "E 200"]
-        self.raw_source = "N 200"
+        self.source = ["p 3", "E 4", "-34 HJwA 232"]
+        self.raw_source = "N 12"
 
     def test_parse_exists(self):
         """Test to confirm that the parser has a method called parse"""
@@ -146,9 +146,15 @@ class ParserTestCase(unittest.TestCase):
             raised = True
         self.assertFalse(raised, "Error Raised")
 
-    def test_parse_executes_no_file_found(self):
+    def test_parse_executes_unknown_command(self):
         """Test to confirm that the parser's can throw exc. no file found"""
-        pass
+
+        raised = False
+        try:
+            self.parser._execute_command('test', 23, 0)
+        except:
+            raised = True
+        self.assertTrue(raised, "Error Raised")
 
 
 
@@ -165,7 +171,7 @@ class SourceReaderTestCase(unittest.TestCase):
     def test_go_executes(self):
         """Test to confirm that the source reader's method go runs without error"""
         raised = False
-        self.source_reader.source = ["p 3", "N 30"]
+        self.source_reader.source = ["p 3", "N 30", 'AWD 24']
 
         try:
             self.source_reader.go()
