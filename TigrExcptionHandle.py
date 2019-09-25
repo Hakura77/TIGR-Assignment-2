@@ -1,7 +1,7 @@
 import sys
 
 
-class ExceptHandler:
+class ExceptionHandler:
 
 	def __init__(self, exit_message):
 		self.exit_message = exit_message

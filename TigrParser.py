@@ -1,7 +1,7 @@
 from TIGr import AbstractParser
 import re
 import json
-
+from TigrExcptionHandle import ExceptionHandler
 """
 Uses Regular Expressions in Parser, Parsed from Configurable Lookup Table
 Written by Kelsey Vavasour and Thomas Baines
@@ -15,7 +15,7 @@ def _handle_source(raw_source):
 
 
 class TigrParser(AbstractParser):
-    def __init__(self, drawer):
+    def __init__(self, drawer, exception_handler):
         super().__init__(drawer)
         self.draw_methods = {
             'select_pen': self.drawer.select_pen,
@@ -25,13 +25,14 @@ class TigrParser(AbstractParser):
             'go_down': self.drawer.go_down,
             'draw_line': self.drawer.draw_line,
             }
+        self.exception_handler = exception_handler
         self.regex_pattern = r'(^[a-zA-Z]\b)\s+?(-?\b\d+\.?\d?\b)?\s*?([#|//].*)?$'
         try:
             with open("command_lookup.json", 'r') as json_file:
                 # load configurable language reference from file
                 self.language_commands = json.load(json_file)  # convert to dict
         except (IOError, FileNotFoundError) as e:  # This error is thrown to be caught further up the stack
-            raise FileNotFoundError(f"Error loading commands from file: {e}")
+            self.exception_handler.display_and_exit(e)
 
     def _find_match(self, line_number):
         trimmed_line = self.source[line_number].strip()
