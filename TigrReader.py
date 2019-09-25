@@ -2,13 +2,14 @@ from TIGr import AbstractSourceReader
 from TurtleDrawer import TurtleDrawer
 from TigrParser import TigrParser
 import sys
-
-
+from TigrExcptionHandle import ExceptionHandler
 class TigrReader(AbstractSourceReader):
-    def __init__(self, parser, optional_file_name=None, optional_source=None):
+
+    def __init__(self, parser, exception_handler, optional_file_name=None, optional_source=None):
         super().__init__(parser, optional_file_name)
         if optional_source:
             self.source = optional_source
+        self.exception_handler = exception_handler
 
     def go(self):
         try:
@@ -18,12 +19,10 @@ class TigrReader(AbstractSourceReader):
                 try:
                     self.source = open(self.file_name).readlines()
                 except (IOError, FileNotFoundError) as e:
-                    raise FileNotFoundError(f"Error loading source code from file {e}")
+                    self.exception_handler.display_and_exit(e)
             self.parser.parse(self.source)
         except Exception as e:  # nice error display to user
-            print("TIGr encountered an error and had to exit", file=sys.stderr)
-            print(e, file=sys.stderr)
-            exit(1)
+            self.exception_handler.display_and_exit(e)
 
 
 if __name__ == "__main__":
@@ -46,10 +45,10 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(description="Extract filename if present")
     arg_parser.add_argument("-f", "--file", help="Name of the file", default=None)
     args = arg_parser.parse_args()
-
+    exception_handling = ExceptionHandler("TIGr went wrong and stopped")
     if args.file:
         # file name provided - read input from file
-        TigrReader(TigrParser(TurtleDrawer()), optional_file_name=args.file).go()
+        TigrReader(TigrParser(TurtleDrawer(), exception_handling), exception_handling, optional_file_name=args.file).go()
     else:
         # read from stdin
         # TODO examine if this section of the code can be incorporated within the class structure
@@ -64,6 +63,6 @@ if __name__ == "__main__":
             # read from piped input
             source = sys.stdin.readlines()
 
-        TigrReader(TigrParser(TurtleDrawer()), optional_source=source).go()
+        TigrReader(TigrParser(TurtleDrawer(), exception_handling), exception_handling, optional_source=source).go()
 
     time.sleep(10)
