@@ -3,6 +3,8 @@ from TurtleDrawer import TurtleDrawer
 from TigrParser import TigrParser
 import sys
 from TigrExcptionHandle import ExceptionHandler
+
+
 class TigrReader(AbstractSourceReader):
 
     def __init__(self, parser, exception_handler, optional_file_name=None, optional_source=None):
@@ -48,7 +50,8 @@ if __name__ == "__main__":
     exception_handling = ExceptionHandler("TIGr went wrong and stopped")
     if args.file:
         # file name provided - read input from file
-        TigrReader(TigrParser(TurtleDrawer(), exception_handling), exception_handling, optional_file_name=args.file).go()
+        TigrReader(TigrParser(TurtleDrawer(), exception_handling),
+                   exception_handling, optional_file_name=args.file).go()
     else:
         # read from stdin
         # TODO examine if this section of the code can be incorporated within the class structure

@@ -10,7 +10,6 @@ Doctests Written by Kelsey Vavasour and Jess Ward
 
 class TurtleDrawer(AbstractDrawer):
     """ Concretion of AbstractDrawer using the Turtle library to execute drawing commands """
-
     def __init__(self):
         self.my_turtle = turtle.Turtle()
         self.pen_colours = ("black", "red", "orange", "yellow", "green", "blue", "indigo", "violet")
@@ -19,6 +18,7 @@ class TurtleDrawer(AbstractDrawer):
     def select_pen(self, pen_num):
         """
         Sets the pen colour, between 0 and 7 (black and the colours of the rainbow)
+        >>> t = TurtleDrawer()
         >>> t.select_pen(2)
         >>> t.select_pen(-5) #doctest: +IGNORE_EXCEPTION_DETAIL
         Traceback (most recent call last):
@@ -41,6 +41,7 @@ class TurtleDrawer(AbstractDrawer):
     def go_along(self, along):
         """ if along is negative, this will move backwards
         :param int along: the distance to travel
+         >>> t = TurtleDrawer()
          >>> t.go_along(20)
          >>> t.go_along(-200)
          """
@@ -52,6 +53,7 @@ class TurtleDrawer(AbstractDrawer):
         if down is negative, the turtle will move up
         :param int down: the distance to travel
         :return:
+        >>> t = TurtleDrawer()
         >>> t.go_down(42)
         >>> t.go_down(-50)
         """
@@ -64,6 +66,7 @@ class TurtleDrawer(AbstractDrawer):
         :param int direction: the heading to face, in degrees (must be between 0 - 360)
         :param int distance: the distance to travel
         :return:
+        >>> t = TurtleDrawer()
         >>> t.draw_line(72, 90)
         >>> t.draw_line(666, 42) #doctest: +IGNORE_EXCEPTION_DETAIL
         Traceback (most recent call last):
