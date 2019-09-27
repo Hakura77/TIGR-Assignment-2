@@ -40,13 +40,11 @@ class TIGrErrorManager:
         return SyntaxError(
             f'Command {command_text} Not recognized by drawer - Command reference mismatch detected')
 
-    def unrecognized_command_error(self, command_string, line_number):
-        """This error is thrown when the command passed in does not exist within the language database"""
-        return SyntaxError(f"Command {command_string} on line {line_number} not recognized")
+    def line_validation_syntax_error(self, line_number, trimmed_line):
+        return SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
 
     def invalid_line_syntax_error(self, line_number, line_value):
         return SyntaxError(f"Command {line_value} on line {line_number} not recognized")
-
 
     def invalid_direction_error(self, direction):
         return ValueError(f"Direction given was {direction}, must be between 0 - 360")
