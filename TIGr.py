@@ -58,6 +58,7 @@ class AbstractSourceReader(ABC):
         self.parser = parser
         self.file_name = optional_file_name
         self.source = []
+        self.error_handler = TIGrErrorManager()
 
     @abstractmethod
     def go(self):
