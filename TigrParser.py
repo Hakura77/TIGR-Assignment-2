@@ -17,7 +17,7 @@ class TigrParser(AbstractParser):
                 # load configurable language reference from file
                 self.language_commands = json.load(json_file)  # convert to dict
         except (IOError, FileNotFoundError) as e:  # This error is thrown to be caught further up the stack
-            raise FileNotFoundError(f"Error loading commands from file: {e}")
+            raise self.error_manager.unable_to_load_language_error(e)
 
     def _prepare_source(self, raw_source):
         """defensively handles edge case where a single command was passed as a string"""
@@ -36,7 +36,7 @@ class TigrParser(AbstractParser):
             return match
         else:
             # Raises SyntaxError to indicate that the line line_number didn't match the required pattern
-            raise SyntaxError(f"line number {line_number} contains invalid syntax: \n\t{trimmed_line}")
+            raise self.error_manager.line_validation_syntax_error(line_number, trimmed_line)
 
     def _build_command(self, command_groups, line_number):
         """Takes the return from the _trim_and_validate() method and builds the appropriate command string to execute"""
@@ -55,7 +55,7 @@ class TigrParser(AbstractParser):
                 args.append(command_data)
             return command_info[0], args
         else:
-            raise SyntaxError(f"Command {command_string} on line {line_number} not recognized")
+            raise self.error_manager.invalid_line_syntax_error(line_number, command_string)
 
     def _execute_command(self, command, arguments, line_number):
         """Accesses the determined command on the provided drawer
@@ -65,18 +65,10 @@ class TigrParser(AbstractParser):
             # if there is nothing in the array, nothing will be passed! Nice and fancy.
             self.drawer.__getattribute__(command)(*arguments)
         except AttributeError as e:
-            raise SyntaxError(
-                f'Command {command} Not recognized by drawer - Command reference mismatch detected')
+            raise self.error_manager.drawer_language_missmatch_error(command)
         except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
             # that caused it
-            args = e.args
-            if args:
-                arg0 = args[0]
-            else:
-                arg0 = str()
-            arg0 += f' at source line {line_number}'
-            e.args = (arg0, *args[1:])
-            raise
+            raise self.error_manager.mutate_other_exceptions(e, line_number)
 
     def parse(self, raw_source):
         """Method to accept raw source code, parse to language commands, and then execute language commands"""

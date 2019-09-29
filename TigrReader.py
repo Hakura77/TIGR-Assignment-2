@@ -18,12 +18,10 @@ class TigrReader(AbstractSourceReader):
                 try:
                     self.source = open(self.file_name).readlines()
                 except (IOError, FileNotFoundError) as e:
-                    raise FileNotFoundError(f"Error loading source code from file {e}")
+                    raise self.error_handler.unable_to_open_input_error(e)
             self.parser.parse(self.source)
         except Exception as e:  # nice error display to user
-            print("TIGr encountered an error and had to exit", file=sys.stderr)
-            print(e, file=sys.stderr)
-            exit(1)
+            self.error_handler.log_error_and_exit(e)
 
 
 if __name__ == "__main__":

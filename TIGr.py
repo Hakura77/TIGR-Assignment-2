@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from TIGrErrorManager import TIGrErrorManager
+
 """ Tiny Interpreted GRaphic = TIGR
 Keep the interfaces defined below in your work.
  """
@@ -36,6 +38,7 @@ class AbstractDrawer(ABC):
 class AbstractParser(ABC):
     def __init__(self, drawer):
         self.drawer = drawer
+        self.error_manager = TIGrErrorManager()
         self.source = []
         self.command = ''
         self.data = 0
@@ -55,6 +58,7 @@ class AbstractSourceReader(ABC):
         self.parser = parser
         self.file_name = optional_file_name
         self.source = []
+        self.error_handler = TIGrErrorManager()
 
     @abstractmethod
     def go(self):
