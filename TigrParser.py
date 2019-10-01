@@ -63,7 +63,7 @@ class TigrParser(AbstractParser):
         try:
             # explodes the created args array into the function that is being called
             # if there is nothing in the array, nothing will be passed! Nice and fancy.
-            self.drawer.__getattribute__(command)(*arguments)
+            self.drawer.execute_command(command, arguments)
         except AttributeError as e:
             raise self.error_manager.drawer_language_missmatch_error(command)
         except Exception as e:  # intercept error thrown that wasn't caught and appending the line number
