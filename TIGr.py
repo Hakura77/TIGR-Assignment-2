@@ -10,6 +10,12 @@ Keep the interfaces defined below in your work.
 class AbstractDrawer(ABC):
     """ Responsible for defining an interface for drawing """
 
+    def execute_command(self, command_name, args):
+        """Wrapper method to allow dynamic selection of command methods from a provided string
+        added to reduce inappropriate intamacy between drawers and parsers."""
+        command = self.__getattribute__(command_name)
+        command(*args)
+
     @abstractmethod
     def select_pen(self, pen_num):
         pass
